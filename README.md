@@ -16,18 +16,18 @@ This original database contains 76 attributes, but all published experiments ref
 The names and social security numbers of the patients were recently removed from the database, replaced with dummy values.
  
 * age: age in years
-* sex: (1 = male; 0 = female)
+* sex: (1  |  male; 0  |  female )
 * cp: chest pain type
 * trestbps: resting blood pressure (in mm Hg on admission to the hospital)
 * chol: serum cholesterol in mg/dl
-* fbs: (fasting blood sugar &gt; 120 mg/dl) (1 = true; 0 = false)
+* fbs: (fasting blood sugar &gt; 120 mg/dl) (1  |  true; 0  |  false )
 * restecg: resting electrocardiographic results
 * thalach: maximum heart rate achieved
-* exang: exercise induced angina (1 = yes; 0 = no)
+* exang: exercise induced angina (1  |  yes; 0  |  no )
 * oldpeak: ST depression induced by exercise relative to rest
 * slope: the slope of the peak exercise ST segment
 * ca: number of major vessels (0-3) colored by fluoroscopy
-* thal: 3 = normal; 6 = fixed defect; 7 = reversible defect
+* thal: (3  |  normal; 6  |  fixed defect; 7  |  reversible defec )
 * target: 1 or 0
  
 ![Dataset](assets/dataset.png)
@@ -52,9 +52,35 @@ As we are saving the ONNX model, we set up compatibility to ONNX models to be Tr
 ### Results
 The best Automated ML model generated the below results/parameters: 
 
-| Algorithm name      | Accuracy       | AUC_weighted           | min_samples_split  | min_weight_fraction_leaf | n_estimators | n_jobs | oob_score | random_state
-| ------------------- | -------------- | ---------------------  | ------------------ | ------------------- | -------------- | ---------------------  | ------------------ | ------------------ | 
-| VotingEnsemble      |   0.86118      |  0.91424               |    0.24421         | 0.0      |   10      |  1               |   False         | None         |
+| Algorithm name      | Accuracy       | AUC_weighted           |
+| ------------------- | -------------- | ---------------------  |
+| VotingEnsemble      |   0.86118      |  0.91424               |
+
+
+As VotingEnsemble has a set of estimators, we present below and example of generated parameters  for **RandomForestClassifier**
+
+| Parameter | value |  
+| -----------|-------|
+| bootstrap | True |
+| ccp_alpha | 0.0 |
+| class_weight | 'balanced' |
+| criterion | 'gini'|
+| max_depth | None |
+| max_features | 'log2' |
+| max_leaf_nodes | None
+| max_samples | None |
+| min_impurity_decrease | 0.0 |
+| min_impurity_split | None |
+| min_samples_leaf | 0.01 |
+| min_samples_split | 0.01 |
+| min_weight_fraction_leaf | 0.0 |
+| n_estimators | 25
+| n_jobs | 1 |
+| oob_score | True|
+| random_state | None |
+| verbose | 0 |
+| warm_start | False |
+
 
 
 * The RunDetails widget
@@ -89,8 +115,8 @@ The random parameter sampler supports discrete values and values distributed ove
 **What are the benefits of the early stopping policy you chose?**
 Bandit is an early termination policy based on slack factor/slack amount and evaluation interval. The policy early terminates any runs where the primary metric is not within the specified slack factor/slack amount with respect to the best performing training run.
  
-As explained in [microsoft documentation](https://docs.microsoft.com/en-us/python/api/azureml-train-core/azureml.train.hyperdrive.banditpolicy?view=azure-ml-py):
-Consider a Bandit policy with slack_factor = 0.2 and evaluation_interval = 100. Assume that run X is the currently best performing run with an AUC (performance metric) of 0.8 after 100 intervals. Further, assume the best AUC reported for a run is Y. This policy compares the value (Y + Y * 0.2) to 0.8, and if smaller, cancels the run. If delay_evaluation = 200, then the first time the policy will be applied is at interval 200.
+As explained in [microsoft documentation](https://docs.microsoft.com/en-us/python/api/azureml-train-core/azureml.train.hyperdrive.banditpolicy?view | azure-ml-py) |
+Consider a Bandit policy with slack_factor  |  0.2 and evaluation_interval  |  100. Assume that run X |is the currently best performing run with an AUC (performance metric) of 0.8 after 100 intervals. Further, assume the best AUC reported for a run is Y. This policy compares the value (Y + Y * 0.2) to 0.8, and if smaller, cancels the run. If delay_evaluation  |  200, then the first time the policy will |be applied is at interval 200.
  
 ### Results
 
@@ -128,42 +154,51 @@ It's required to deploy just the best model between automl and hyperdrive but fo
 * **AutoML:**
 
 ![AutoML Endpoint](assets/07-1.png)
-Sample input:
+Sample input and request:
 ```
-data = json.dumps({
-"data": [
- {
-   "age": 63,
-   "sex": 1,
-   "cp": 3,
-   "trestbps": 145,
-   "chol": 233,
-   "fbs": 1,
-   "restecg": 0,
-   "thalach": 150,
-   "exang": 0,
-   "oldpeak": 2.3,
-   "slope": 0,
-   "ca": 0,
-   "thal": 1
- },
- {
-   "age": 57,
-   "sex": 0,
-   "cp": 0,
-   "trestbps": 140,
-   "chol": 241,
-   "fbs": 0,
-   "restecg": 1,
-   "thalach": 123,
-   "exang": 1,
-   "oldpeak": 0.2,
-   "slope": 1,
-   "ca": 0,
-   "thal": 3
- }
-]
+import requests
+import json
+
+data = json.dumps({ 
+  "data": [  
+    {
+      "age": 63,
+      "sex": 1,
+      "cp": 3,
+      "trestbps": 145,
+      "chol": 233,
+      "fbs": 1,
+      "restecg": 0,
+      "thalach": 150,
+      "exang": 0,
+      "oldpeak": 2.3,
+      "slope": 0,
+      "ca": 0,
+      "thal": 1
+    },
+    { 
+      "age": 57,
+      "sex": 0,
+      "cp": 0,
+      "trestbps": 140,
+      "chol": 241,
+      "fbs": 0,
+      "restecg": 1,
+      "thalach": 123,
+      "exang": 1,
+      "oldpeak": 0.2,
+      "slope": 1,
+      "ca": 0,
+      "thal": 3
+    }
+  ]
 })
+
+headers = {'Content-Type': 'application/json'}
+
+resp = requests.post(aci_service.scoring_uri, data, headers=headers)
+
+pred = json.loads(json.loads(resp.text))['result']
 ```
 Sample output:
 ```
@@ -172,12 +207,17 @@ Sample output:
 * **Hyperdrive:**
 
 ![Hyperdrive Endpoint](assets/07-2.png)
-Sample input:
+Sample input and request:
 ```
 data = json.dumps(
- [[63, 1, 3, 145, 233, 1, 0, 150, 0, 2.3, 0, 0, 1],
-  [57, 0, 0, 140, 241, 0, 1, 123, 1, 0.2, 1, 0, 3]]
+    [[63, 1, 3, 145, 233, 1, 0, 150, 0, 2.3, 0, 0, 1], 
+     [57, 0, 0, 140, 241, 0, 1, 123, 1, 0.2, 1, 0, 3]]
 )
+
+
+headers = {'Content-Type': 'application/json'}
+
+resp = requests.post(service.scoring_uri, data, headers=headers)
 ```
 Sample output:
 ```
@@ -186,6 +226,7 @@ Sample output:
 ## Screen Recording
  
 [Project presentation screencast](https://youtu.be/z_c2B2eaV7E)
+
 The screencast demonstrates:
 - A working model
 - Demo of the deployed  models
@@ -214,7 +255,7 @@ The screencast demonstrates:
 ## References
 * [Heart Disease UCI](https://www.kaggle.com/ronitf/heart-disease-uci)
 * [Deploying an existing model in Azure](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-deploy-existing-model)
-* [Web Service invocation](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-consume-web-service?tabs=python)
+* [Web Service invocation](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-consume-web-service?tabs)
 * [Enable web service logging](https://docs.microsoft.com/en-us/azure/machine-learning/how-to-enable-app-insights)
  
 
