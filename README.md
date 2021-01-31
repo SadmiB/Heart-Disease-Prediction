@@ -154,6 +154,19 @@ It's required to deploy just the best model between automl and hyperdrive but fo
 * **AutoML:**
 
 ![AutoML Endpoint](assets/07-1.png)
+
+
+**Intstructions for querying the endpoint:**
+
+* Prapare the data in a json format as shown in swagger below
+* Setup the headers to use `application/json`
+* Send a post request to `service.scoring_uri`
+* Show the result that should be contained in `response.text`
+
+
+![Swagger doc](assets/08.png)
+
+
 Sample input and request:
 ```
 import requests
@@ -207,6 +220,19 @@ Sample output:
 * **Hyperdrive:**
 
 ![Hyperdrive Endpoint](assets/07-2.png)
+
+
+
+**Intstructions for querying the endpoint:**
+
+* Prapare the data as a 2D array.
+```
+[[age, sex, cp, trestbps ,chol , fbs", restecg,thalach , exang, oldpeak , slope, ca, thal1]]
+```
+* Setup the headers to use `application/json`
+* Send a post request to `service.scoring_uri`
+* Show the result that should be contained in `response.text`
+
 Sample input and request:
 ```
 data = json.dumps(
